@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="movie-comment-update-content content">
+    <div class="movie-comment-update-container container">
+      <h1>댓글 수정하기</h1>
+      <form method="POST" id="comment-id" class="movie-comment-update-form">
+        {% csrf_token %}
+        {{ form.as_p}}
+        <div class="btn-box d-flex align-items-center justify-content-end">
+          <button class="me-2"><a href="/{{ movie_comment.pk}}/" class="">돌아가기</a></button>
+          <button type="submit" class="">수정하기</button>
+        </div>
+      </form>
+      
+    {% endblock content %}
+    </div>
+  </div>

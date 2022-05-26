@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="review-edit-content content">
+  <div class="review-edit-container container">
+    <h1>게시물 댓글 수정하기</h1>
+    <form method="POST" id="comment-id" class="review-edit-form">
+      {% csrf_token %}
+      {{ form.as_p}}
+      <div class="btn-box d-flex align-items-center justify-content-end">
+        <button class="me-2"><a href="{{ comment.review.get_absolute_url }}">뒤로가기</a></button>
+        <button type="submit" class="">수정하기</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock content %}

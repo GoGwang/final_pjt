@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load socialaccount %}
+{% load static %}
+{% block content %}
+<div class="content login-content">
+  <div class="login-container container">
+    <div class="img-box">
+      <img src="/static/img/ticket.jpg" alt="">
+    </div>
+    <div class="login-box">
+      <h1>로그인</h1>
+      <form action="{% url 'accounts:login' %}" method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="Submit">
+      </form>
+      <a href="{% url 'accounts:signup' %}" class="signup-btn">계정생성하기</a>
+      <div class="sns-btn-wrap d-flex align-items-center justify-content-center flex-wrap">
+        <a href="{% provider_login_url 'google' next='/' %}" class="sns-btn google">구글 로그인</a><br>
+        <a href=" {% provider_login_url 'naver' next='/' %}" class="sns-btn naver">네이버 로그인</a>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- <form action="{% url 'accounts:login' %}" method='POST'>
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button>Login</button>
+</form>
+<a href="{% provider_login_url 'google' next='/' %}">구글 로그인</a><br>
+<a href=" {% provider_login_url 'naver' next='/' %}">네이버 로그인</a> -->
+{% endblock content %}

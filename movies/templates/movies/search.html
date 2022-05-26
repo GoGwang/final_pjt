@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="movie-search-content content">
+    <div class="movie-search-container container">
+      <div class="search-result-mention-box">
+        {% if error|length == 0 %}
+          <h3><span class="bold">검색 결과 | </span>{{ search_word }}</h3>
+        {% else %}
+          <h3><span class="bold">검색 결과 | </span>{{ search_word }}{{ error }}</h3>
+        {% endif %}
+        {% if message|length != 0 %}
+          <h5 class="suggest-message">{{ message }}</h5>
+        {% endif %}
+      </div>
+    
+      <div class="search-result-item-box">
+        <div class="row justify-content-center">
+          {% for movie in movie_list %}
+            <div class="col-4">
+              <div class="search-result-item" style="max-width: 20rem;margin:0 auto 40px">
+                <a href="{% url 'movies:detail' movie.pk %}">
+                  <div class="search-result-item-content">
+                    <img src="{{ movie.poster_path }}" alt="">
+                    <p>{{movie.title}}</p>
+                  </div>
+                </a>
+              </div>
+            </div>
+          {% endfor %}  
+        </div>
+      </div>
+    </div>
+  </div>
+  
+
+{% endblock content %}

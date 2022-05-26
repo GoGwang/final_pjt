@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="review-update-content content">
+  <div class="review-update-container container">
+    <h1>게시물 수정하기</h1>
+    <form method="post" class="review-update-form">
+      {% csrf_token %}
+      <table>
+        {{ form.as_p }}
+        <tr>
+          <th><label for="id_tags_str">Tags:</label></th>
+          <td><input type="text" name="tags_str" id="id_tags_str" value="{{ tags_str_default }}"></td>
+        </tr>
+      </table>
+      <button type="submit" class="btn btn-primary float-right">수정하기</button>
+    </form>
+  </div>
+</div>
+
+
+
+{% endblock %}

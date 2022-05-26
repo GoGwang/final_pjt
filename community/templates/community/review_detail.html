@@ -1,0 +1,215 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="review-detail-content content">
+    <div class="review-detail-container container">
+        {% comment %} <h2 class="text-center">DETAIL</h2>
+        <h3>{{ review.pk }} 번째 글</h3> {% endcomment %}
+        <div class="review-title-box">
+          <div class="d-flex align-items-center" style="margin-bottom: 24px;">
+            <h1>{{ review.title }}</h1>
+            <div class="float-right category-name" style="display: flex;align-items: center;margin-left: 20px;">
+              <a class="me-2" href="{{ review.category.get_absolute_url }}">{{review.category}}</a>
+              <!-- 태그 기능-->
+              {% if review.tags.exists %}
+                <i class="fas fa-tags"></i>
+                  {% for tag in review.tags.all %}
+                    <a href="{{ tag.get_absolute_url }}" class="badge badge-light">{{ tag }}</a>
+                  {% endfor %}
+              {% endif %}
+            </div>
+          </div>
+          <div class="review-title-detail-box">
+            <div class="d-flex">
+              <a href="{% url 'accounts:profile' review.user.username %}" style="font-weight:500;" class="me-2">{{review.user}}</a>
+            </div>
+            {% comment %} <p>작성 시각: {{ review.created_at }}</p> {% endcomment %}
+            <p>마지막 업로드 | {{ review.updated_at }}</p>
+          </div>
+        </div>
+        <div class="review-content-box">
+          <div class="img-box d-flex justify-content-center">
+            {% if review.head_image %}
+              <img src="{{review.head_image.url}}" alt="Card image Cap">
+            {% else %}
+              <img src="https://picsum.photos/seed/{{review.id}}800/200" alt="random_image">
+            {% endif %}
+          </div>
+          <div class="text-box">
+            <p style="text-align:center;">
+              {{ review.content }}
+            </p>
+          </div>
+        </div>
+
+        {% if review.file_upload %}
+        <div class="download-box">
+          <a href="{{ review.file_upload.url }}" class="btn btn-outline-dark" role="button">
+          Download:
+            {% if review.get_file_ext == 'csv' %}
+              <i class="fa-solid fa-file-csv"></i>
+            {% elif review.get_file_ext == 'xlsx' or review.get_file_ext == 'xls'%}
+              <i class="fa-solid fa-file-excel"></i>
+            {% elif review.get_file_ext == 'docx' or review.get_file_ext == 'doc'%}
+              <i class="fa-solid fa-file-word"></i>
+            {% else %}
+              <i class="fa-solid fa-file"></i>
+            {% endif %}
+            {{ review.get_file_name }}
+          </a>
+        </div>
+        {% endif %}
+        <div class="review-footer-box">
+          <!-- 좋아요 & 좋아요 취소-->
+          <div class="likes-box">
+            <form action="{% url 'community:like' review.pk %}" method="POST" class="d-inline">
+              {% csrf_token %}
+              {% if user in review.like_users.all %}
+                <button class="likes-btn"><i class="fa-solid fa-heart-circle-minus"></i></button>
+              {% else %}
+                <button class="likes-btn"><i class="fa-solid fa-heart-circle-plus"></i></button>
+              {% endif %}
+            </form>
+            <p>{{ review.like_users.all|length }} 명이 이 글을 좋아합니다.</p>
+          </div>
+          <div class="btn-box">
+            {% if user.is_authenticated and user == review.user %}
+              <div class="float-right">
+                <a href="{% url 'community:index' %}" class="me-2">목록</a>
+                <a href="/community/update/{{ review.pk}}/" role="button" class="me-2">수정</a>
+                <form action="{% url 'community:delete' review.pk %}" method="POST">
+                  {% csrf_token %}
+                  <input type="submit" value="삭제">
+                </form>
+              </div>
+              {% else %}
+              <div class="float-right">
+                <a href="{% url 'community:index' %}" class="me-2">목록</a>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+        <div class="review-comment-box"><!-- 댓글리스트-->
+          {% if review.comment_set.exists %}
+            {% for comment in review.comment_set.iterator %}
+              <div class="review-comment-item">
+                <div class="title-content-box">
+                  <h5 class="mt-0">
+                    <a href="{% url 'accounts:profile' comment.user.username %}">{{ comment.user.username}}</a> &nbsp;&nbsp;<small class="text-muted">{{comment.created_at}}</small>
+                  </h5>
+                  <p>{{ comment.content | linebreaks}}</p>
+                </div>
+                {% if user.is_authenticated and comment.user == user %}
+                  <div class="float-right comment-edit-box">
+                    <button><a role="button" id="comment-{{ comment.pk}}" href="/community/update_comment/{{ comment.pk}}/">수정</a></button>
+                    <button><a href="/community/delete_comment/{{ comment.pk}}/">삭제</a></button>
+                  </div>
+                    {% comment %} <a role="button" href="#" id="comment-{{ comment.pk}}-delete-modal-btn" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deleteCommentModal-{{comment.pk}}">Delete</a>
+                  </div> 
+                  <div class="modal fade" id="deleteCommentModal-{{ comment.pk}}" tabindex="-1" role="dialog" aria-labelledby="deleteCommentModal" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="deleteModalLabel">진짜로 삭제하시겠습니까?</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal body">
+                          <del>{{ comment| linebreaks}}</del>
+                        </div>
+                        <div class="modal footer">
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                          <a role="button" class="btn btn-danger" href="/community/delete_comment/{{ comment.pk}}/">Delete</a>
+                        </div>
+                      </div>
+                    </div>
+                  </div> {% endcomment %}
+                {% endif %}
+              </div>
+            {% endfor %}
+          {% endif %} 
+          
+          
+          <!--댓글 작성-->
+          {% if request.user.is_authenticated %}
+            <form action="{% url 'community:new_comment' review.pk %}" method="POST" class="comment-form">
+              {% csrf_token %}
+              {{ comment_form }}
+              <input type="submit" value="작성하기">
+            </form>
+          {% else %}
+            <a href="{% url 'accounts:login' %}">[댓글을 작성하려면 로그인하세요.]</a>
+          {% endif %}
+        </div>
+    </div>
+  </div>
+    {% comment %} <a href="/community/">[back]</a> {% endcomment %}
+{% endblock  %}
+
+
+{% comment %} <div id="comment-area">
+  <div "class=card my-4">
+    <h5 class="card-header">Leave a Comment:</h5>
+    <div class="card-body">
+      {% if user.is_authenticated %}
+      <form method="POST" action="{% url 'community:new_comment' review.pk %}">
+        {% csrf_token %}
+        <div class="form-group">
+          <textarea class="form-control" row="3"></textarea>
+        </div>
+        <input type="submit">
+      </form>
+      {% else %}
+        <a role="button" class="btn btn-outline-dark btn-block btn-sm" href="#" data-toggle="modal" data-target="#loginModal">Log in and leave a comment</a>
+      {% endif %}
+    </div>
+  </div>
+  
+  {% if review.comment_set.exists %}
+    {% for comment in review.comment_set.iterator %}
+      <h5 class="mt-0">{{ comment.user.username}} &nbsp;&nbsp;<small class="text-muted">{{comment.created_at}}</small>
+      </h5>
+      <p>{{ comment.content | linebreaks}}</p>
+    {% endfor %}
+ {% endif %} 
+</div>
+<hr>
+{% endblock %} {% endcomment %}
+{% block script %}
+  <script>
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value
+    const csrfConfig = {
+      headers : {'X-CSRFToken' : csrftoken},
+    }
+    
+    const likeForms = document.querySelectorAll('.like-form')
+    likeForms.forEach(form => {
+      form.addEventListener('submit', function (event) {
+        event.preventDefault()
+        const reviewPk = form.dataset.reviewId
+        const LIKE_URL = `/community/${reviewPk}/like/`
+        
+        axios.post(LIKE_URL, null, csrfConfig)
+          
+          .then(res => {
+            console.log(res.data)
+            return res.data
+          })
+          .then(res => {
+            const likeBtn = document.querySelector(`#like-${reviewPk}`)
+            const likeCnt = document.querySelector(`#like-count-${reviewPk}`)
+
+            if (res.liked) {
+              likeBtn.innerText = '좋아요 취소'
+            } else {
+              likeBtn.innerText = '좋아요'
+            }
+            likeCnt.innerText = res.like_cnt
+          })
+          .catch(err => {
+            console.log(err)
+          })
+      })
+    })
+  </script>
+{% endblock script %}

@@ -1,0 +1,450 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="sub-nav">
+    <ul class="menu">
+      <!-- <li>
+        <a href="" class="d-flex">
+          <span class="me-2 icon"><i class="fa-solid fa-house"></i></span>
+          <p>홈</p>
+        </a>
+      </li> -->
+      <li>
+        <a href="{% url 'community:index' %}" class="d-flex">
+          <span class="me-2 icon"><i class="fa-solid fa-star"></i></span>
+          <p>커뮤니티</p>
+        </a>
+      </li>
+    </ul>
+    <h4>카테고리</h4>
+    <ul class="menu">
+      <li><a href="#swiper1">
+        <span class="me-2 icon"><i class="fa-solid fa-fire"></i></span>
+        <p>영화의 고수 추천작</p>
+      </a></li>
+      {% comment %} <li><a href="">
+        <span class="me-2 icon"><i class="fa-solid fa-heart"></i></span>
+        <p>가장 인기있는 작품</p>
+      </a></li> {% endcomment %}
+      <li><a href="#swiper2">
+        <span class="me-2 icon"><i class="fa-solid fa-face-grin-squint-tears"></i></span>
+        <p>코미디</p>
+      </a></li>
+      <li><a href="#swiper3">
+        <span class="me-2 icon"><i class="fa-solid fa-face-grin-hearts"></i></span>
+        <p>로맨스</p>
+      </a></li>
+      <li><a href="#swiper4">
+        <span class="me-2 icon"><i class="fa-solid fa-face-grimace"></i></span>
+        <p>공포/스릴러</p>
+      </a></li>
+      <li><a href="#swiper5">
+        <span class="me-2 icon"><i class="fa-solid fa-face-grin-stars"></i></span>
+        <p>액션/판타지</p>
+      </a></li>
+      <li><a href="#swiper6">
+        <span class="me-2 icon"><i class="fa-solid fa-face-flushed"></i></span>
+        <p>추리/미스테리</p>
+      </a></li>
+      <li><a href="#swiper7">
+        <span class="me-2 icon"><i class="fa-solid fa-shuffle"></i></span>
+        <p>좋아요 기반 영화 추천</p>
+      </a></li>
+    </ul>
+    <div class="sns-wrap">
+      <ul>
+        <li><a href="https://www.instagram.com/movie_gosu_official/" target="_blank"><i class="fa-brands fa-instagram"></i></a></li>
+        <li><a href="https://twitter.com/mvgosu_official" target="_blank"><i class="fa-brands fa-twitter"></i></a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="content movie-content">
+    <div class="movie-container swiper1" id="swiper1">
+      <h3>영화의 고수가 닉값 해드립니다!</h3>
+      <div class="movie-list-wrap swiper-wrapper">
+        {% for movie in favorite_movies %}
+          <div class="swiper-slide d-flex flex-column align-items-center">
+            <a href="{% url 'movies:detail' movie.pk %}">
+              <img src="{{ movie.poster_path }}" class="movie-img">
+              <p class="movie-title">
+                {{ movie.title }}
+              </p>
+            </a>
+          </div>  
+        {% endfor %}
+      </div>
+      <div class="swiper-button-prev"></div>
+      <div class="swiper-button-next"></div>
+    </div>
+    <div class="movie-container swiper2" id="swiper2">
+      <h3>뭐 재밌는 영화 없나?</h3>
+      <div class="movie-list-wrap swiper-wrapper">
+        {% for movie in movies %}
+          {% for genre in movie.genres.all %}
+            {% if genre.name == '코미디' %}
+              <div class="swiper-slide d-flex flex-column align-items-center">
+                <a href="{% url 'movies:detail' movie.pk %}">
+                  <img src="{{ movie.poster_path }}" class="movie-img">
+                  <p class="movie-title">
+                    {{ movie.title }}
+                  </p>
+                </a>
+              </div>  
+            {% endif %}
+          {% endfor %}
+          {% endfor %}
+        </div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+    </div>
+    <div class="movie-container swiper3" id="swiper3">
+      <h3> 커피 한 잔 할래요~</h3>
+      <div class="movie-list-wrap swiper-wrapper">
+        {% for movie in movies %}
+          {% for genre in movie.genres.all %}
+            {% if genre.name == '로맨스' %}
+              <div class="swiper-slide d-flex flex-column align-items-center">
+                <a href="{% url 'movies:detail' movie.pk %}">
+                  <img src="{{ movie.poster_path }}" class="movie-img">
+                  <p class="movie-title">
+                    {{ movie.title }}
+                  </p>
+                </a>
+              </div>    
+            {% endif %}
+          {% endfor %}
+          {% endfor %}
+        </div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+    </div>
+    <div class="movie-container swiper4" id="swiper4">
+      <h3>내가 아직도 영화의 고수로 보이니..?</h3>
+      <div class="movie-list-wrap swiper-wrapper">
+        {% for movie in movies %}
+          {% for genre in movie.genres.all %}
+            {% if genre.name == '스릴러' %}
+              <div class="swiper-slide d-flex flex-column align-items-center">
+                <a href="{% url 'movies:detail' movie.pk %}">
+                  <img src="{{ movie.poster_path }}" class="movie-img">
+                  <p class="movie-title">
+                    {{ movie.title }}
+                  </p>
+                </a>
+              </div>  
+            {% endif %}
+          {% endfor %}
+          {% endfor %}
+        </div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+    </div>
+    <div class="movie-container swiper5" id="swiper5">
+      <h3>팍팍한 일상에 액션과 판타지 한 스푼!</h3>
+      <div class="movie-list-wrap swiper-wrapper">
+        {% for movie in movies %}
+          {% for genre in movie.genres.all %}
+            {% if genre.name == '액션' %}
+              <div class="swiper-slide d-flex flex-column align-items-center">
+                <a href="{% url 'movies:detail' movie.pk %}">
+                  <img src="{{ movie.poster_path }}" class="movie-img">
+                  <p class="movie-title">
+                    {{ movie.title }}
+                  </p>
+                </a>
+              </div>  
+            {% endif %}
+          {% endfor %}
+          {% endfor %}
+        </div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+    </div>
+    <div class="movie-container swiper6" id="swiper6">
+      <h3>I'm so curious YEAH~</h3>
+      <div class="movie-list-wrap swiper-wrapper">
+        {% for movie in movies %}
+          {% for genre in movie.genres.all %}
+            {% if genre.name == '미스터리'%}
+              <div class="swiper-slide d-flex flex-column align-items-center">
+                <a href="{% url 'movies:detail' movie.pk %}">
+                  <img src="{{ movie.poster_path }}" class="movie-img">
+                  <p class="movie-title">
+                    {{ movie.title }}
+                  </p>
+                </a>
+              </div>    
+            {% endif %}
+          {% endfor %}
+          {% endfor %}
+        </div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+    </div>
+
+    <div class="movie-container swiper1" id="swiper7">
+      <h3>결정을 못하는 당신에게!</h3>
+      <div class="movie-list-wrap swiper-wrapper">
+        {% for movie in random_movies %}
+          <div class="swiper-slide d-flex flex-column align-items-center">
+            <a href="{% url 'movies:detail' movie.pk %}">
+              <img src="{{ movie.poster_path }}" class="movie-img">
+              <p class="movie-title">
+                {{ movie.title }}
+              </p>
+            </a>
+          </div>  
+        {% endfor %}
+      </div>
+      <div class="swiper-button-prev"></div>
+      <div class="swiper-button-next"></div>
+    </div>
+    
+ </div>
+    {% comment %} <h2>{{ person.username }}님이 좋아요를 누른 영화</h2>
+    {% for movie in person.movie_like_reviews.all %}
+    <p><a href="{{ movie.get_absolute_url }}">{{ movie.title }}</a></p> {% endcomment %}
+
+    {% comment %} <div class="movie-container swiper7" id="swiper7">
+      <h3>추리/미스테리</h3>
+      <div class="movie-list-wrap swiper-wrapper">
+        {% for movie in movies %}
+          {% for genre in movie.genres.all %}
+            {% if genre.name == '미스터리' %}
+              <div class="swiper-slide d-flex flex-column align-items-center">
+                <a href="{% url 'movies:detail' movie.pk %}">
+                  <img src="{{ movie.poster_path }}" class="movie-img">
+                  <p class="movie-title">
+                    {{ movie.title }}
+                  </p>
+                </a>
+              </div>    
+            {% endif %}
+          {% endfor %}
+          {% endfor %}
+        </div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+    </div> {% endcomment %}
+
+    {% comment %} {% for movie in person.movie_like_reviews.all %} {% endcomment %}
+  </div>
+
+{% endblock content %}
+{% block script %}
+<script>
+  let swiper1 = new Swiper('.swiper1', {
+      slidesPerView: 1,
+      loop:true,
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      },
+      autoplay: {
+        delay: 5000,
+        disableOnInteraction: false,
+        pauseOnMouseEnter:true,
+      },
+      breakpoints: {
+          640: {
+            slidesPerView: 2,
+            spaceBetween: 20,
+          },
+          768: {
+            slidesPerView: 3,
+            spaceBetween: 40,
+          },
+          1200: {
+            slidesPerView: 4,
+            spaceBetween: 20,
+          },
+          1400: {
+            slidesPerView: 5,
+            spaceBetween: 20,
+          },
+          1600: {
+            slidesPerView: 6,
+            spaceBetween: 20,
+          },
+        },
+    }
+  );
+  let swiper2 = new Swiper('.swiper2', {
+      slidesPerView: 1,
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      },
+      autoplay: {
+        delay: 5000,
+        disableOnInteraction: false,
+        pauseOnMouseEnter:true,
+      },
+      breakpoints: {
+          640: {
+            slidesPerView: 2,
+            spaceBetween: 20,
+          },
+          768: {
+            slidesPerView: 3,
+            spaceBetween: 40,
+          },
+          1200: {
+            slidesPerView: 4,
+            spaceBetween: 20,
+          },
+          1400: {
+            slidesPerView: 5,
+            spaceBetween: 20,
+          },
+          1600: {
+            slidesPerView: 6,
+            spaceBetween: 20,
+          },
+        },
+    }
+  );
+  let swiper3 = new Swiper('.swiper3', {
+      slidesPerView: 1,
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      },
+      autoplay: {
+        delay: 5000,
+        disableOnInteraction: false,
+        pauseOnMouseEnter:true,
+      },
+      breakpoints: {
+          640: {
+            slidesPerView: 2,
+            spaceBetween: 20,
+          },
+          768: {
+            slidesPerView: 3,
+            spaceBetween: 40,
+          },
+          1200: {
+            slidesPerView: 4,
+            spaceBetween: 20,
+          },
+          1400: {
+            slidesPerView: 5,
+            spaceBetween: 20,
+          },
+          1600: {
+            slidesPerView: 6,
+            spaceBetween: 20,
+          },
+        },
+    }
+  );
+  let swiper4 = new Swiper('.swiper4', {
+      slidesPerView: 1,
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      },
+      autoplay: {
+        delay: 5000,
+        disableOnInteraction: false,
+        pauseOnMouseEnter:true,
+      },
+      breakpoints: {
+          640: {
+            slidesPerView: 2,
+            spaceBetween: 20,
+          },
+          768: {
+            slidesPerView: 3,
+            spaceBetween: 40,
+          },
+          1200: {
+            slidesPerView: 4,
+            spaceBetween: 20,
+          },
+          1400: {
+            slidesPerView: 5,
+            spaceBetween: 20,
+          },
+          1600: {
+            slidesPerView: 6,
+            spaceBetween: 20,
+          },
+        },
+    }
+  );
+  let swiper5 = new Swiper('.swiper5', {
+      slidesPerView: 1,
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      },
+      autoplay: {
+        delay: 5000,
+        disableOnInteraction: false,
+        pauseOnMouseEnter:true,
+      },
+      breakpoints: {
+          640: {
+            slidesPerView: 2,
+            spaceBetween: 20,
+          },
+          768: {
+            slidesPerView: 3,
+            spaceBetween: 40,
+          },
+          1200: {
+            slidesPerView: 4,
+            spaceBetween: 20,
+          },
+          1400: {
+            slidesPerView: 5,
+            spaceBetween: 20,
+          },
+          1600: {
+            slidesPerView: 6,
+            spaceBetween: 20,
+          },
+        },
+    }
+  );
+  let swiper6 = new Swiper('.swiper6', {
+      slidesPerView: 1,
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      },
+      autoplay: {
+        delay: 5000,
+        disableOnInteraction: false,
+        pauseOnMouseEnter:true,
+      },
+      breakpoints: {
+          640: {
+            slidesPerView: 2,
+            spaceBetween: 20,
+          },
+          768: {
+            slidesPerView: 3,
+            spaceBetween: 40,
+          },
+          1200: {
+            slidesPerView: 4,
+            spaceBetween: 20,
+          },
+          1400: {
+            slidesPerView: 5,
+            spaceBetween: 20,
+          },
+          1600: {
+            slidesPerView: 6,
+            spaceBetween: 20,
+          },
+        },
+    }
+  );
+
+
+</script>
+{% endblock script %}

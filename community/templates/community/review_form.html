@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="content review-form-content">
+  <div class="review-form-container container">
+    <h1>게시물 작성하기</h1>
+    <form method="POST" enctype="multipart/form-data" class="review-form">
+      {% csrf_token %}
+      <table>
+        {{ form.as_p }}
+        <tr>
+          <th><label for="id_tags_str">Tags:</label></th>
+          <td><input type="text" name="tags_str" id="id_tags_str"></td>
+        </tr>
+      </table>
+      <button type="submit" class="btn btn-primary float-right">작성하기</button>
+    </form>
+  </div>
+</div>
+  
+
+  {% comment %} <h1 class="text-center">CREATE</h1>
+  <form action="" method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit">
+  </form>
+  <hr>
+  <a href="{% url 'community:index' %}">[back]</a> {% endcomment %}
+{% endblock %}

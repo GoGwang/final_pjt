@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="content detail-content">
+  <div class="detail-container container">
+    <div class="detail-cont-box">
+      <div class="img-box">
+        <img src="{{ movie.poster_path }}" alt="">
+      </div>
+      <div class="text-box">
+        <div class="title-box">
+          <p>{{ movie.title }}</p>
+          <div class="star-box mt-2 d-flex justify-content-between align-items-center">
+            <!--평점 예쁘게-->
+            <div class="">
+              {% if ratingAvg >= 5 %}
+                  <a><i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning me-2"></i> {{ratingAvg}}점</a>
+              {% elif ratingAvg >= 4.5 %}
+                  <a><i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i class="fas fa-star-half-alt text-warning me-2"></i> {{ratingAvg}}점</a>
+              {% elif ratingAvg >= 4 %}
+                  <a><i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i class="far fa-star text-warning me-2"></i>{{ratingAvg}}점</a>
+              {% elif ratingAvg >= 3.5 %}
+                  <a><i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"><i class="fas fa-star-half-alt text-warning"></i></i><i class="far fa-star text-warning me-2"></i> {{ratingAvg}}점</a>
+              {% elif ratingAvg >= 3 %}
+                  <a><i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i class="far fa-star text-warning"></i><i class="far fa-star text-warning me-2"></i>{{ratingAvg}}점</a>
+              {% elif ratingAvg >= 2.5 %}
+                  <a><i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i class="fas fa-star-half-alt text-warning"></i><i class="far fa-star text-warning"></i><i class="far fa-star text-warning me-2"></i> {{ratingAvg}}점</a>
+              {% elif ratingAvg >= 2 %}
+                  <a><i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i class="far fa-star text-warning"></i><i class="far fa-star text-warning"></i><i class="far fa-star text-warning me-2"></i>{{ratingAvg}}점</a>
+              {% elif ratingAvg >= 1.5 %}
+                  <a><i class="fas fa-star text-warning"></i><i class="fas fa-star-half-alt text-warning"></i><i class="far fa-star text-warning"></i><i class="far fa-star text-warning"></i><i class="far fa-star text-warning me-2"></i> {{ratingAvg}}점</a>
+              {% elif ratingAvg >= 1 %}
+                  <a><i class="fas fa-star text-warning"></i><i class="far fa-star text-warning"></i><i class="far fa-star text-warning"></i><i class="far fa-star text-warning"></i><i class="far fa-star text-warning me-2"></i> {{ratingAvg}}점</a>
+              {% endif %}
+            </div>
+            
+            <span style="color:#666;font-family: Pretendard;">지금까지 이 영화에 <span style="font-weight:500;color:#333">{{movie.score_set.all.count}}</span>개의 별점이 쌓였어요! &nbsp; </span>
+          </div>
+        </div>
+        <ul class="info-box d-flex flex-wrap">
+          <li class="genre">
+            <p>장르 &nbsp;|&nbsp; 
+              {% for genre in movie.genres.all %}
+                {{ genre.name }}
+              {% endfor %}
+            </p>
+          </li>
+          <li class="date">
+            <p>발매일 &nbsp;|&nbsp; {{ movie.release_date }}</p>
+          </li>
+          <li class="vote_average">
+            <p>평점 &nbsp;|&nbsp; {{ movie.vote_average }}</p>
+          </li>
+        </ul>
+        <div class="overview-box">
+          <h4>
+            줄거리
+          </h4>
+          <p>
+            {% if movie.overview %}
+              {{ movie.overview }}
+            {% else %}
+              내용 없음
+            {% endif %}
+          </p>
+        </div>
+        <a href="{% url 'movies:index' %}" class="btn back-btn">홈으로</a>
+      </div>
+    </div>
+    <div class="detail-comment-box">
+      <div id="comment-area">
+        <div class="my-star-box">
+          {% if user.is_authenticated %}
+          <!--별점 입력-->
+              <p>{% include 'movies/rating.html' %} </p>
+              {% for score in movie.score_set.all %}
+                  {% if score.user == request.user %}
+                      <!--현재 로그인 유저가 작성한 별점-->
+                      <p><i class="fa-solid fa-star" style="color:#f1c40f;padding:0px 6px;font-size:18px;"></i><b>{{score.user.username}}</b>님의 별점은 <span style="font-weight:500;">{{score.rating}}</span>점입니다.</p>
+                  {% endif %}
+                  
+              {% endfor %}
+          {% endif %}
+        </div>
+        <!--좋아요-->
+        <div class="movie-footer-box">
+          <!-- 좋아요 & 좋아요 취소-->
+          <div class="likes-box">
+            <form action="{% url 'movies:movie_like' movie.pk %}" method="POST" class="d-inline">
+              {% csrf_token %}
+              {% if user in movie.movie_like_users.all %}
+                <button class="likes-btn"><i class="fa-solid fa-heart-circle-minus"></i></button>
+              {% else %}
+                <button class="likes-btn"><i class="fa-solid fa-heart-circle-plus"></i></button>
+              {% endif %}
+            </form>
+            <p style="font-family: Pretendard;">{{ movie.movie_like_users.all|length }} 명이 이 글을 좋아합니다.</p>
+          </div>
+        
+        <!--댓글 리스트-->
+        <div class="movie-comment-box"><!-- 댓글리스트-->
+          {% if movie.movie_comment_set.exists %}
+            {% for movie_comment in movie.movie_comment_set.iterator %}
+              <div class="movie-movie_comment-item d-flex justify-content-between">
+                <div class="title-content-box">
+                  <h5 class="mt-0"> <a href="{% url 'accounts:profile' movie_comment.user.username %}">{{ movie_comment.user.username}}</a> &nbsp;&nbsp;<small class="text-muted">{{movie_commentcreated_at}}</small>
+                  </h5>
+                  <p>{{ movie_comment.content | linebreaks}}</p>
+                </div>
+                {% if user.is_authenticated and movie_comment.user == user %}
+                  <div class="float-right movie_comment-edit-box">
+                    <button><a role="button" id="movie_comment-{{ movie_comment.pk}}" href="/{{ movie_comment.pk}}/update/">수정</a></button>
+                    <button><a href="/{{ movie_comment.pk}}/delete/">삭제</a></button>
+                  </div>
+                {% endif %}
+              </div>
+            {% endfor %}
+          {% endif %} 
+          
+          
+          <!--댓글 작성-->
+          <div class="movie_comment-form">
+            {% if request.user.is_authenticated %}
+            <form action="{% url 'movies:new_movie_comment' movie.pk %}" method="POST">
+              {% csrf_token %}
+              {{ movie_comment_form }}
+              <input type="submit" value="작성하기">
+            </form>
+            {% else %}
+              <a href="{% url 'accounts:login' %}">[댓글을 작성하려면 로그인하세요.]</a>
+            {% endif %}
+          </div>
+        </div>
+        {% comment %} <h3>댓글 목록</h3>
+        {% for movie_comment in movie_comments %}
+          <li>
+            {{ movie_comment.user }} - {{ movie_comment.content }}
+            {% if request.user == movie_comment.user %}
+              <form action="{% url 'movies:movie_comments_delete' movie.pk movie_comment.pk %}" method="POST">
+                {% csrf_token %}
+                <input type="submit" value="삭제">
+              </form>
+              <form action="{% url 'movies:movie_comments_update' movie.pk movie_comment.pk %}" method="POST">
+                {% csrf_token %}
+                <input type="submit" value="수정">
+              
+            {% endif %}
+          </li>
+        {% endfor %}
+        </ul>
+        
+        <hr>
+        {% if request.user.is_authenticated %}
+        <form action="{% url 'movies:movie_comments_create' movie.pk %}" method='POST'>
+          {% csrf_token %}
+          {{ movie_comment_form }}
+          <button>제출</button>
+        </form>
+        {% else %}
+        <a href="{% url 'accounts:login' %}">[댓글을 작성하려면 로그인 필수]</a>
+        {% endif %} {% endcomment %}
+      </div>
+    </div>
+  </div>
+</div>
+<!-- <h1>DETAIL</h1>
+<hr>
+<img src="{{ movie.poster_path }}" alt="">
+<p>Title : {{ movie.title }}</p>
+<p>Date : {{ movie.release_date }}</p>
+<p>Popularity : {{ movie.popularity }}</p>
+<p>Vote Count : {{ movie.vote_count }}</p>
+<p>Vote Average : {{ movie.vote_average }}</p>
+<p>Overview : {{ movie.overview }}</p>
+<p>Genre : 
+  {% for genre in movie.genres.all %}
+  {{ genre.name }}
+  {% endfor %}</p>
+  <a href="{% url 'movies:index' %}">BACK</a>
+  <hr> -->
+
+
+<ul>
+</div>
+{% endblock content %}

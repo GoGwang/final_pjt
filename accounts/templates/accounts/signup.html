@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="content signup-content">
+  <div class="signup-container container">
+    <div class="img-box">
+      <img src="/static/img/ticket.jpg" alt="">
+    </div>
+    <div class="signup-box">
+      <h1>회원가입</h1>
+      <form action="{% url 'accounts:signup' %}" method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="Submit">
+      </form>
+    </div>
+  </div>
+</div>
+<!-- <h1>SignUp</h1>
+<form action="{% url 'accounts:signup' %}" method="POST">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <input type="Submit">
+</form>
+<a href="{% url 'movies:index' %}">Back</a> -->
+{% endblock content %}

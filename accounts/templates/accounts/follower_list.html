@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="content profile-content">
+  <div class="profile-container container">
+    <h1 class="main-title">프로필</h1>
+    <div class="profile-banner">
+      <p>{{ person.username }}의 프로필 페이지입니다.</p>
+      {% if user.is_authenticated and person == user %}
+        <a href="{% url 'accounts:update' %}" class="d-flex align-items-center">회원정보수정 &nbsp;<i class="fa-solid fa-circle-arrow-right"></i></a>
+      {% endif %}
+    </div>
+    {% with followings=person.followings.all followers=person.followers.all %}
+    <div class="profile-info">
+      <h2>팔로잉/팔로워</h2>
+      <div class="profile-follow-box">
+        <div class="profile-follow-count-box">팔로잉 : <a href="{% url 'accounts:followinglist' person.username %}"><div id='followings'>{{ followings|length }}</a></div> 
+        팔로워 :  <a href="{% url 'accounts:followerlist' person.username %}"><div id='followers'>{{ followers|length }}</a></div></div>
+        {% if request.user != person %}
+        <form action="{% url 'accounts:followerfollow' person.pk %}" method="POST">
+          {% csrf_token %}
+          {% if request.user in followers %}
+            <button id="followBtn">언팔로우</button>
+          {% else %}
+            <button id="followBtn">팔로우</button>
+            {% endif %}
+          </form>
+        {% endif %}
+      </div>
+    </div>
+    <div class="follow-user-info">
+      <h2>팔로워 유저</h2>
+      {% for followeruser in person.followers.all %}
+        <p><a href="{% url 'accounts:profile' followeruser %}">{{followeruser}}</p>
+      {% endfor %}
+      </div>
+      {% endwith %}
+    </div>
+  </div>
+</div>
+{% endblock %}

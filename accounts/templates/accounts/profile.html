@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="content profile-content">
+  <div class="profile-container container">
+    <h1 class="main-title">프로필</h1>
+    <div class="profile-banner">
+      <p>{{ person.username }}의 프로필 페이지입니다.</p>
+      {% if user.is_authenticated and person == user %}
+        <a href="{% url 'accounts:update' %}" class="d-flex align-items-center">회원정보수정 &nbsp;<i class="fa-solid fa-circle-arrow-right"></i></a>
+      {% endif %}
+    </div>
+    {% with followings=person.followings.all followers=person.followers.all %}
+      <div class="profile-info">
+        <h2>팔로잉/팔로워</h2>
+        <div class="profile-follow-box">
+          <div class="profile-follow-count-box">팔로잉 : <a href="{% url 'accounts:followinglist' person.username %}"><div id='followings'>{{ followings|length }}</a></div>&nbsp;
+          팔로워 :  <a href="{% url 'accounts:followerlist' person.username %}"><div id='followers'>{{ followers|length }}</a></div></div>
+          {% if request.user != person %}
+            <form action="{% url 'accounts:follow' person.pk %}" method="POST">
+              {% csrf_token %}
+              {% if request.user in followers %}
+                <button id="followBtn">언팔로우</button>
+              {% else %}
+                <button id="followBtn">팔로우</button>
+              {% endif %}
+            </form>
+          {% endif %}
+        </div>
+      </div>
+    {% endwith %}
+    <div class="user-activity">
+      <div class="user-article user-activity-inner">
+        {% comment %} 이 사람이 작성한 게시글 목록 {% endcomment %}
+        <h2>{{ person.username }}님의 정보</h2>
+        <ul>
+          <li>
+            <p> 이름 : {{person.last_name}}{{person.first_name}}</p>
+            <p> 이메일 : {{person.email}}</p>
+          </li>
+        </ul>
+      </div>
+      <div class="user-likes_movie user-activity-inner toggle-box-1">{% comment %} 이 사람이 좋아요를 누른 게시글 목록 {% endcomment %}
+        <h2 class="d-flex justify-content-between toggle-btn-1 " style="display:block;cursor:pointer;">
+          <p class="d-flex align-items-center"><span class="me-1" style="color:#d63031;"><i class="fa-solid fa-heart"></i></span>{{ person.username }}님이 좋아요를 누른 영화</p>
+          <span style="color:#7e3af2;"><i class="fa-solid fa-caret-down"></i></span>
+        </h2>
+        <ul class="toggle1 row" style="display:none;">
+          {% for movie in person.movie_like_reviews.all %}
+          <li class="col-3" style="text-align:center;">
+            <img src="{{ movie.poster_path }}" style="width:100px" alt="">
+            <p><a href="{{ movie.get_absolute_url }}">{{ movie.title }}</a></p>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div class="user-comment user-activity-inner">
+        {% comment %} 이 사람이 작성한 댓글 목록 {% endcomment %}
+        <h2 class="d-flex justify-content-between toggle-btn-2 " style="display:block;cursor:pointer;">
+          <p class="d-flex align-items-center"><span class="me-1" style="color:#636e72;"><i class="fa-solid fa-film"></i></span>
+            {{ person.username }}님이 작성한 영화 리뷰</p>
+          <span style="color:#7e3af2;"><i class="fa-solid fa-caret-down"></i></span>
+        </h2>
+        <ul class="toggle2" style="display:none;">
+        {% for movie_comment in person.movie_comment_set.all %}
+          <li>
+            <p><a href="{{ movie_comment.movie.get_absolute_url }}">[{{ movie_comment.movie.title}}] {{ movie_comment.content }}</a></p>
+          </li>
+        {% endfor %}
+        </ul>
+      </div>
+
+      <div class="user-review user-activity-inner">
+        {% comment %} 이 사람이 작성한 게시글 목록 {% endcomment %}
+        <h2 class="d-flex justify-content-between toggle-btn-3 " style="display:block;cursor:pointer;">
+          <p class="d-flex align-items-center"><span class="me-1" style="color:#6c5ce7;"><i class="fa-solid fa-pencil"></i></span>
+            {{ person.username }}님이 작성한 게시글</p>
+            <span style="color:#7e3af2;"><i class="fa-solid fa-caret-down"></i></span>
+        </h2>
+        <ul class="toggle3" style="display:none;">
+          {% for review in person.review_set.all %}
+          <li class="d-flex justify-content-between">
+            <p><a href="{{ review.get_absolute_url }}">{{ review.title }}</a></p>
+            <div class="d-flex">
+              <p class="me-2"> <a href="{{ review.category.get_absolute_url }}" style="color:#666"> {{review.category}}</a></p>
+              <p style="color:#aaa"> {{review.created_at}}</p>
+            </div>
+          </li>
+          {% endfor %}  
+        </ul>
+      </div>
+
+      <div class="user-comment user-activity-inner">
+        {% comment %} 이 사람이 작성한 댓글 목록 {% endcomment %}
+        <h2 class="d-flex justify-content-between toggle-btn-4 " style="display:block;cursor:pointer;">
+          <p class="d-flex align-items-center"><span class="me-1" style="color:#00b894;"><i class="fa-solid fa-message"></i></span>
+            {{ person.username }}님이 작성한 댓글</p>
+            <span style="color:#7e3af2;"><i class="fa-solid fa-caret-down"></i></span>
+        </h2>
+        <ul class="toggle4" style="display:none;">
+          {% for comment in person.comment_set.all %}
+            <li class="d-flex justify-content-between"> 
+              <div class="d-flex">
+                <p class="me-2"><a href="{{ comment.review.get_absolute_url }}">[{{ comment.review.title}}]</a></p>
+                <p><a href="{{ comment.review.get_absolute_url }}" style="color:#666">{{ comment.content }}</a></p>
+              </div>
+              <div class="d-flex">
+                <p class="me-2"><a href="{{ comment.review.category.get_absolute_url }}"> {{comment.review.category}}</a></p>
+                <p style="color:#aaa">{{comment.created_at}}</p>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="user-likes user-activity-inner">{% comment %} 이 사람이 좋아요를 누른 게시글 목록 {% endcomment %}
+        <h2 class="d-flex justify-content-between toggle-btn-5 " style="display:block;cursor:pointer;">
+          <p class="d-flex align-items-center"><span class="me-1" style="color:#d63031"><i class="fa-brands fa-gratipay"></i></span>
+            {{ person.username }}님이 좋아요를 누른 게시글</p>
+            <span style="color:#7e3af2;"><i class="fa-solid fa-caret-down"></i></span>
+        </h2>
+        <ul class="toggle5" style="display:none;">
+         {% for review in person.like_reviews.all %}
+         <li class="d-flex justify-content-between"> 
+          <p><a href="{{ review.get_absolute_url }}">{{ review.title }}</a></p>
+          <div class="d-flex">
+            {% comment %} <p class="me-2"><a href="{% url 'accounts:profile' review.user.username %}">{{ review.user }}</a></p> {% endcomment %}
+            <p class="me-2"><a href="{{ review.category.get_absolute_url }}" style="color:#666">{{ review.category}}</a></p>
+            <p style="color:#aaa">{{ review.updated_at}}</p>
+          </div>
+        </li>
+         {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% comment %} JS {% endcomment %}
+{% block script %}
+<script>
+  
+  $('.toggle-btn-1').click(function(){
+    $('.toggle1').stop().slideToggle(300);
+  });
+  $('.toggle-btn-2').click(function(){
+    $('.toggle2').stop().slideToggle(300);
+  });
+  $('.toggle-btn-3').click(function(){
+    $('.toggle3').stop().slideToggle(300);
+  });
+  $('.toggle-btn-4').click(function(){
+    $('.toggle4').stop().slideToggle(300);
+  });
+  $('.toggle-btn-5').click(function(){
+    $('.toggle5').stop().slideToggle(300);
+  });
+
+  const followingCount = document.querySelector('#followings')
+  const followerCount = document.querySelector('#followers')
+  
+  const form = document.querySelector('#follow-form')
+  
+
+  form.addEventListener('submit', function(event) {
+    event.preventDefault()
+    
+    const id = form.getAttribute('account-id')
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value
+    axios({
+      method: 'post',
+      url: `http://127.0.0.1:8000/accounts/${id}/follow/`,
+      headers: {'X-CSRFToken': csrftoken},
+    })
+    .then(function(response) {
+      const followingCount = document.querySelector('#followings')
+      followingCount.innerText = response.data.followingcount
+      const followerCount = document.querySelector('#followers')
+      followerCount.innerText = response.data.followercount
+
+      const followerButton = document.querySelector('#followBtn')
+      if (response.data.followerd){
+        followerButton.innerText = '언팔로우'
+      } else {
+        followerButton.innerText = '팔로우'
+      }
+      })
+  })
+</script>
+{% endblock %}

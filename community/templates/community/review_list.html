@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="sub-nav review-list">
+    <ul class="menu">
+      <!-- <li>
+        <a href="" class="d-flex">
+          <span class="me-2 icon"><i class="fa-solid fa-house"></i></span>
+          <p>홈</p>
+        </a>
+      </li> -->
+      <li>
+        <a href="{% url 'community:index' %}" class="d-flex">
+          <span class="me-2 icon"><i class="fa-solid fa-star"></i></span>
+          <p>커뮤니티</p>
+        </a>
+      </li>
+    </ul>
+    <h4>카테고리</h4>
+    <div id="categories-card">
+        <ul class="list-unstyled mb-0 menu">
+          {% for category in categories %}
+            <li>
+              <a href="{{ category.get_absolute_url }}" class="d-flex align-items-center justify-content-between">
+                <p>{{ category}} </p>
+                <span class="article-count" style="color: #aaa;">{{ category.review_set.count}}</span>
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+    </div>
+  </div>
+
+  <div class="content review-list-content row justify-content-center">
+    <div class="review-list-container col-10">
+      <h1>커뮤니티
+        {% if search_info %}<small class="text-muted">{{ search_info }}</small>{% endif %} 
+        {% if category %}<span class="badge badge-secondary"> {{ category }}</span>{% endif %}</h1>
+        {% if tag %} <span class="badge badge-secondary">{{ tag }}({{ tag.review_set.count}})</span>{% endif %}
+      <div class="review-list-banner d-flex align-items-center">
+        <i class="fa-solid fa-star me-2"></i>
+        <p>자유롭게 소통할 수 있는 공간입니다.</p>
+      </div>
+      <div class="review-list-content-box">
+        <div class="review-list-item-title row">
+          <p class="col-1 ">번호</p>
+          <p class="col-5 ">제목</p>
+          <p class="col-2 ">태그</p>
+          <p class="col-2 ">카테고리</p>
+          <p class="col-2 ">작성자</p>
+        </div>
+        {% if review_list.exists %}
+          {% for review in review_list %}
+            <div class="review-list-item row ">
+              <p class="col-1">{{ review.pk }}</p>
+              <p class="col-5"><a href="{{ review.get_absolute_url }}">{{ review.title }}</a></p>
+              {% if review.tags.exists %}
+                <div class="tag-box col-2">
+                  <i class="fas fa-tags" style="color: #9333ea;"></i>
+                  {% for tag in review.tags.iterator %}
+                    <a href="{{ tag.get_absolute_url }}"><span class="">{{ tag }}</span></a>
+                  {% endfor %}
+                </div>
+              {% else %}
+              <div class="tag-box col-2"></div>
+              {% endif %}
+              <span class="float-right col-2"><a href="{{ review.category.get_absolute_url }}">{{review.category}}</a></span>
+              
+              <p class="col-2"><a href="{% url 'accounts:profile' review.user.username %}">{{ review.user }}</a></p>
+              {% comment %} <p>글 내용: {{ review.content }}</p> {% endcomment %}
+            </div>
+          {% endfor %}
+      {% else %}
+        <h3>게시물이 없습니다.</h3>
+      {% endif %}
+      <div class="bottom-box">
+        
+
+
+        <ul class="pagination justify-content-center mb-4 custom-pagination">
+          {% if page_obj.has_previous %}
+          <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.previous_page_number }}">&larr;</a>
+          </li>
+          {% else %}
+              <li class="page-item disabled">
+              <a class="page-link" href="#">&larr;</a>
+          </li>
+              {% endif %}
+      
+          {% for index in pagelist %}
+              {% if index == page_obj.number %}
+          <li class="page-item active">
+              <span class="page-link">{{ index }}</span>
+          </li>
+              {% else %}
+              <li class="page-item">
+                  <a class="page-link" href="?page={{ index }}">{{ index }}</a>
+              </li>
+              {% endif %}
+          {% endfor %}
+      
+              {% if page_obj.has_next %}
+          <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.next_page_number }}">&rarr;</a>
+          </li>
+              {% else %}
+              <li class="page-item disabled">
+              <a class="page-link" href="#">&rarr;</a>
+          </li>
+              {% endif %}
+        </ul> 
+
+
+
+
+
+
+
+        {% if request.user.is_authenticated %}
+          <a href="{% url 'community:create' %}" class="review-article-write-btn">작성하기</a>
+        {% else %}
+          <a href="{% url 'accounts:login' %}" class="review-article-write-btn">작성하기</a>
+        {% endif %}
+        <form action="" class="review-list-search-form">
+          <input type="text" placeholder="리뷰검색" id="review-search-input">
+          <button onclick="searchReview();"><i class="fa-solid fa-magnifying-glass"></i></button>
+        </form>
+      </div>
+      </div>
+    </div>
+  </div>
+ 
+<script>
+  function searchReview(){
+    let searchValue = document.getElementById('review-search-input').value.trim();
+    if (searchValue.length >1){
+      location.href="/community/search/" + searchValue + "/"; 
+    }
+    else{
+      alert('검색어('+ searchValue +')가 너무 짧습니다.');
+    }
+  };
+
+ document.getElementById('review-search-input').addEventListener('keyup', function(evnet)
+ {
+    if (event.key ==='Enter'){
+      searchReview();
+    }
+  });
+</script>
+
+
+{% endblock %}
+
+
+
